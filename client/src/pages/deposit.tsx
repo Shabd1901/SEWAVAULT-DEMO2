@@ -70,11 +70,15 @@ export default function Deposit() {
       setOthers("");
       setManualInput("");
     },
-    onError: () => {
+    onError: (error: any) => {
+      console.error("Deposit error:", error);
+      const errorMessage = error.message?.includes("PayloadTooLargeError") || error.message?.includes("entity too large")
+        ? "Photo file is too large. Please try taking the photo again."
+        : "Failed to complete deposit. Please try again.";
       toast({
         variant: "destructive",
         title: "Deposit Failed",
-        description: "Failed to complete deposit. Please try again.",
+        description: errorMessage,
       });
     },
   });

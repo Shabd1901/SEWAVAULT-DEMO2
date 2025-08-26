@@ -66,10 +66,11 @@ export default function Return() {
       setCurrentToken(null);
       setManualInput("");
     },
-    onError: () => {
+    onError: (error: any) => {
+      console.error("Return error:", error);
       toast({
         variant: "destructive",
-        title: "Return Failed",
+        title: "Return Failed", 
         description: "Failed to complete return. Please try again.",
       });
     },

@@ -76,6 +76,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const data = createDepositSchema.parse(req.body);
       
+      // Validate photo data
+      if (!data.sangatPhoto || !data.sangatPhoto.startsWith('data:image/')) {
+        return res.status(400).json({ error: "Invalid photo data" });
+      }
+      
       const depositRecord = {
         sangatPhoto: data.sangatPhoto,
         items: data.items,
@@ -87,11 +92,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json({ success: true });
     } catch (error) {
+      console.error("Deposit creation error:", error);
+      
       if (error instanceof z.ZodError) {
-        return res.status(400).json({ error: "Invalid request data" });
+        return res.status(400).json({ error: "Invalid request data", details: error.errors });
       }
       
-      res.status(500).json({ error: error instanceof Error ? error.message : "Failed to create deposit" });
+      const errorMessage = error instanceof Error ? error.message : "Failed to create deposit";
+      res.status(500).json({ error: errorMessage });
     }
   });
 
@@ -99,10 +107,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.delete("/api/deposits/:tokenNumber", async (req, res) => {
     try {
       const tokenNumber = parseInt(req.params.tokenNumber);
+      
+      if (isNaN(tokenNumber)) {
+        return res.status(400).json({ error: "Invalid token number" });
+      }
+      
       await storage.deleteDeposit(tokenNumber);
       res.json({ success: true });
     } catch (error) {
-      res.status(500).json({ error: "Failed to return items" });
+      console.error("Return error:", error);
+      const errorMessage = error instanceof Error ? error.message : "Failed to return items";
+      res.status(500).json({ error: errorMessage });
     }
   });
 

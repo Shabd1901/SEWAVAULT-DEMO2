@@ -47,15 +47,29 @@ export default function PhotoCapture({ onPhotoCapture, capturedPhoto }: PhotoCap
       return;
     }
 
-    // Set canvas dimensions to match video
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
+    // Optimize canvas dimensions for smaller file size
+    const maxWidth = 800;
+    const maxHeight = 600;
+    const videoAspectRatio = video.videoWidth / video.videoHeight;
+    
+    let canvasWidth = Math.min(video.videoWidth, maxWidth);
+    let canvasHeight = Math.min(video.videoHeight, maxHeight);
+    
+    // Maintain aspect ratio
+    if (canvasWidth / canvasHeight > videoAspectRatio) {
+      canvasWidth = canvasHeight * videoAspectRatio;
+    } else {
+      canvasHeight = canvasWidth / videoAspectRatio;
+    }
+    
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
 
-    // Draw video frame to canvas
-    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    // Draw video frame to canvas with optimization
+    context.drawImage(video, 0, 0, canvasWidth, canvasHeight);
 
-    // Convert to base64 with good quality
-    const photoDataUrl = canvas.toDataURL('image/jpeg', 0.9);
+    // Convert to base64 with balanced quality and size
+    const photoDataUrl = canvas.toDataURL('image/jpeg', 0.7);
     onPhotoCapture(photoDataUrl);
     
     setIsCapturing(false);
@@ -93,7 +107,7 @@ export default function PhotoCapture({ onPhotoCapture, capturedPhoto }: PhotoCap
     context.fillText('Sangat Photo', 200, 140);
     context.fillText('(Demo Placeholder)', 200, 170);
 
-    const photoDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+    const photoDataUrl = canvas.toDataURL('image/jpeg', 0.6);
     onPhotoCapture(photoDataUrl);
   };
 
