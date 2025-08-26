@@ -1,0 +1,126 @@
+I want you to create a complete Expo React Native project called SEWAVAULT DEMO2 in one shot.
+This app is a token-based demo for deposit and return of electronic items.
+
+🔹 1. Framework & Versions
+
+Make sure the project is set up with the exact expected versions (downgrade or align if necessary):
+
+expo@53.0.22 ✅
+
+react@19.0.0 ✅
+
+react-dom@19.0.0 ✅
+
+react-native@0.79.5 ✅
+
+react-native-gesture-handler@~2.24.0 ✅
+
+react-native-reanimated@~3.17.4 ✅
+
+react-native-web@^0.20.0 ✅
+
+Do not use higher mismatched versions like 53.0.20, 19.1.1, 0.80.2, etc. The versions must match exactly.
+
+🔹 2. Dependencies to Install
+
+Install and configure the following packages:
+
+npx expo install expo-camera react-native-screens react-native-safe-area-context @react-navigation/native @react-navigation/native-stack
+
+
+Use expo-camera for scanning (✅ replacing old expo-barcode-scanner).
+
+Navigation handled with React Navigation (native-stack).
+
+🔹 3. App Structure
+
+The project should have the following folders/files:
+
+/components
+  BarcodeScanner.js
+/screens
+  DepositScreen.js
+  ReturnScreen.js
+App.js
+
+🔹 4. BarcodeScanner Component
+
+Located at components/BarcodeScanner.js.
+
+Use CameraView from expo-camera.
+
+Request camera permissions on mount.
+
+Props:
+
+onBarCodeScanned(data) → callback when barcode is detected.
+
+Show:
+
+“Requesting for camera permission...” if still loading.
+
+“No access to camera” if denied.
+
+Camera view filling most of the screen if granted.
+
+🔹 5. DepositScreen.js
+
+Located at /screens/DepositScreen.js.
+
+Import and use the BarcodeScanner component.
+
+Store scanned result in state.
+
+Show:
+
+Title: “Deposit Screen”.
+
+Barcode scanner view.
+
+Text below with scanned token data.
+
+🔹 6. ReturnScreen.js
+
+Located at /screens/ReturnScreen.js.
+
+Same setup as DepositScreen.
+
+Title: “Return Screen”.
+
+Show scanned token result below camera view.
+
+🔹 7. App.js (Navigation)
+
+Setup navigation using @react-navigation/native-stack.
+
+Two screens:
+
+DepositScreen (initial route).
+
+ReturnScreen.
+
+Both screens should import their respective files.
+
+🔹 8. Cleanup
+
+Remove all traces of expo-barcode-scanner.
+
+Ensure app.json and dependencies contain only expo-camera.
+
+No leftover imports from old scanner.
+
+🔹 9. Expected Final Behavior
+
+When app opens → navigates to Deposit Screen.
+
+Shows camera using expo-camera.
+
+When a token QR/barcode is scanned → scanned data is displayed below.
+
+User can switch to Return Screen via navigation and do the same.
+
+Everything must run with correct version alignment.
+
+📌 Final Goal:
+Build the SEWAVAULT DEMO2 app with expo-camera scanning, working navigation, Deposit/Return flows, and correct dependency versions.
+It should run cleanly without version mismatch errors, Hermes crashes, or missing native module errors.

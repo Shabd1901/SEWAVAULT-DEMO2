@@ -1,0 +1,102 @@
+You are going to build a complete Expo React Native app called **SEWAVAULT DEMO2**.  
+This app is a demo of a token-based item management system for Sangat during sewa.  
+Follow these exact specifications and generate everything in one shot.  
+
+---
+
+## 🔹 Core Setup
+- Use **Expo SDK 53**.
+- Make sure package versions match these expectations:
+  - expo@53.0.20 (expected 53.0.22)
+  - react@19.1.1 (expected 19.0.0)
+  - react-dom@19.1.1 (expected 19.0.0)
+  - react-native@0.80.2 (expected 0.79.5)
+  - react-native-gesture-handler@2.28.0 (expected ~2.24.0)
+  - react-native-reanimated@4.0.2 (expected ~3.17.4)
+  - react-native-web@0.21.1 (expected ^0.20.0)
+
+Ensure compatibility in package.json so the app runs properly without version mismatch errors.
+
+- Use **React Navigation (Native Stack)** for navigation.
+- Dependencies: expo-camera, expo-image-picker, expo-file-system, @react-navigation/native, @react-navigation/native-stack, react-native-gesture-handler, react-native-reanimated, react-native-screens, react-native-safe-area-context.
+- Do NOT use expo-barcode-scanner. Instead, use **expo-camera** with a QR/Barcode recognition library like `react-native-vision-camera` or fallback to scanning with Camera preview + detection.
+- Set up navigation with **Deposit Screen** and **Return Screen**.
+
+---
+
+## 🔹 App Logic
+The system works **only with tokens** (no counters/pardas for now).  
+Each token = 1 record in DB.  
+
+### Database
+- Use local JSON or SQLite (pick whichever is easier in Expo demo).
+- Each token record must have:
+  - tokenNumber (string, from barcode)
+  - isInUse (boolean)
+  - sangatPhoto (URI or base64 string)
+  - items (array of { name, quantity })
+
+---
+
+## 🔹 Deposit Screen
+**Flow:**
+1. Open Camera → Scan barcode.  
+   - If token doesn’t exist, create it.  
+   - If token already in use, show error “Token already occupied”.
+2. Once token recognized → open **Deposit Form**:
+   - Take **mandatory Sangat photo** using camera.
+   - Show checklist of items:
+     - Mobile (default quantity = 1)
+     - Earphones
+     - Headset
+     - Watch
+     - Charger
+     - Powerbank
+     - Others (text field optional)
+   - Sewadar selects relevant items and adjusts quantities.
+3. On Submit:
+   - Save sangatPhoto + items + quantities inside token record.
+   - Mark token as **inUse = true**.
+
+---
+
+## 🔹 Return Screen
+**Flow:**
+1. Open Camera → Scan barcode.  
+   - If token not in use, show error “Token not in use”.
+   - If in use, fetch and display details.
+2. Show:
+   - Sangat photo (taken during deposit).
+   - List of items + quantities.
+3. Add button **Confirm Return**.
+   - On click → clear record, reset token (inUse = false).
+
+---
+
+## 🔹 UI Requirements
+- Clean, minimal design with Tailwind or basic styles.
+- Two main buttons on Home:
+  - "Deposit" → goes to DepositScreen.
+  - "Return" → goes to ReturnScreen.
+- Camera preview must cover scanning area properly.
+- Forms should be scrollable and mobile-friendly.
+- Checklist for items should support **increment/decrement quantities**.
+
+---
+
+## 🔹 Important Rules
+- Do NOT use expo-barcode-scanner (we are replacing it completely).  
+- Camera must scan QR/Barcode → only extract **token number**.  
+- Do not assign counters or pardas right now.  
+- Each token may only be used for one active deposit.  
+- After return, token is cleared and becomes available again.  
+- Sangat photo is **mandatory** in Deposit flow.  
+
+---
+
+## 🔹 Deliverables
+- Generate all files required to run in Expo (with correct imports and navigation).
+- Implement HomeScreen, DepositScreen, ReturnScreen, and storage logic.
+- Ensure DB is local (JSON or SQLite).
+- Provide instructions on running the app after creation (`npm start` or `npx expo start`).
+
