@@ -31,9 +31,10 @@ export default function Deposit() {
     },
     onSuccess: (data) => {
       setCurrentToken(data.token);
+      setPhase("form"); // Immediately proceed to form
       toast({
         title: "Token Validated",
-        description: `Token ${data.token.tokenNumber} is available for deposit`,
+        description: `Token ${data.token.tokenNumber} ready for deposit`,
       });
     },
     onError: (error: any) => {

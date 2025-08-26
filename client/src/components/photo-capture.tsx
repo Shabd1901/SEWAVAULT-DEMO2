@@ -31,15 +31,21 @@ export default function PhotoCapture({ onPhotoCapture, capturedPhoto }: PhotoCap
 
     if (!context) return;
 
-    // Set canvas dimensions
-    canvas.width = video.videoWidth || 400;
-    canvas.height = video.videoHeight || 300;
+    // Wait for video to be ready
+    if (video.videoWidth === 0 || video.videoHeight === 0) {
+      setTimeout(capturePhoto, 100);
+      return;
+    }
+
+    // Set canvas dimensions to match video
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
 
     // Draw video frame to canvas
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    // Convert to base64
-    const photoDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+    // Convert to base64 with good quality
+    const photoDataUrl = canvas.toDataURL('image/jpeg', 0.9);
     onPhotoCapture(photoDataUrl);
     
     stopCamera();
@@ -116,6 +122,8 @@ export default function PhotoCapture({ onPhotoCapture, capturedPhoto }: PhotoCap
             onLoadedMetadata={() => {
               if (videoRef.current && stream) {
                 videoRef.current.srcObject = stream;
+                // Ensure video is playing
+                videoRef.current.play();
               }
             }}
             data-testid="video-photo-preview"

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Camera } from "lucide-react";
 import { useCamera } from "@/hooks/use-camera";
+import { BrowserMultiFormatReader, NotFoundException } from '@zxing/library';
 
 interface BarcodeScannerProps {
   onBarcodeScanned: (barcode: string) => void;
@@ -12,6 +13,7 @@ export default function BarcodeScanner({ onBarcodeScanned }: BarcodeScannerProps
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { stream, startCamera, stopCamera, isActive } = useCamera();
   const [isScanning, setIsScanning] = useState(false);
+  const [codeReader] = useState(() => new BrowserMultiFormatReader());
 
   useEffect(() => {
     if (stream && videoRef.current) {
@@ -20,26 +22,49 @@ export default function BarcodeScanner({ onBarcodeScanned }: BarcodeScannerProps
   }, [stream]);
 
   useEffect(() => {
-    let intervalId: NodeJS.Timeout;
+    let scanning = true;
     
-    if (isActive && isScanning) {
-      // Simulate barcode detection for demo
-      // In production, use QuaggaJS or similar library
-      intervalId = setInterval(() => {
-        // Check for demo barcode input in console
+    if (isActive && isScanning && videoRef.current) {
+      const video = videoRef.current;
+      
+      const scanBarcode = async () => {
+        try {
+          const result = await codeReader.decodeOnceFromVideoDevice(undefined, video);
+          if (result && scanning) {
+            onBarcodeScanned(result.getText());
+            setIsScanning(false);
+          }
+        } catch (err) {
+          if (!(err instanceof NotFoundException) && scanning) {
+            // Continue scanning on other errors
+            setTimeout(scanBarcode, 100);
+          }
+        }
+      };
+
+      // Also check for demo barcode input
+      const checkMockBarcode = () => {
         const mockBarcode = (window as any).mockBarcode;
-        if (mockBarcode) {
+        if (mockBarcode && scanning) {
           onBarcodeScanned(mockBarcode);
           (window as any).mockBarcode = null;
           setIsScanning(false);
+          return;
         }
-      }, 1000);
+        if (scanning) {
+          setTimeout(checkMockBarcode, 500);
+        }
+      };
+
+      // Start both real scanning and demo checking
+      scanBarcode();
+      checkMockBarcode();
     }
 
     return () => {
-      if (intervalId) clearInterval(intervalId);
+      scanning = false;
     };
-  }, [isActive, isScanning, onBarcodeScanned]);
+  }, [isActive, isScanning, onBarcodeScanned, codeReader]);
 
   const handleStartCamera = async () => {
     try {

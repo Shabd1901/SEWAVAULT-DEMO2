@@ -32,7 +32,11 @@ export default function Return() {
     },
     onSuccess: (data) => {
       setCurrentToken(data);
-      setPhase("details");
+      setPhase("details"); // Immediately show details
+      toast({
+        title: "Token Found",
+        description: `Token ${data.tokenNumber} ready for return`,
+      });
     },
     onError: (error: any) => {
       const errorMessage = error.message.includes("404") 
