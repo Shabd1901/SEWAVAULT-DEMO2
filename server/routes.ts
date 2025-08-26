@@ -25,12 +25,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Validate token
+  // Validate token with detailed validation
   app.get("/api/tokens/:tokenNumber/validate", async (req, res) => {
     try {
       const tokenNumber = parseInt(req.params.tokenNumber);
-      const token = await storage.getToken(tokenNumber);
       
+      // First validate token exists in system
+      const isValidToken = await storage.validateToken(tokenNumber);
+      if (!isValidToken) {
+        return res.status(404).json({ error: "Token not found in system" });
+      }
+      
+      const token = await storage.getToken(tokenNumber);
       if (!token) {
         return res.status(404).json({ error: "Token not found in system" });
       }

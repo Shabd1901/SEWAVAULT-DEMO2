@@ -1,7 +1,7 @@
 import { type Token, type Deposit, type InsertToken, type InsertDeposit, type TokenRecord, type DepositRecord } from "@shared/schema";
 import { randomUUID } from "crypto";
 
-// Predefined valid tokens from CSV data
+// Predefined valid tokens from CSV data - imported from attached JSON file
 const VALID_TOKENS_DATA = [
   { "token_number": 1001, "secret": "IFUD7D", "barcode_data": "ABX_1001_IFUD7D_RSSB", "file_path": "barcodes_secure\\token_1001.png" },
   { "token_number": 1002, "secret": "FIZD0V", "barcode_data": "ABX_1002_FIZD0V_RSSB", "file_path": "barcodes_secure\\token_1002.png" },

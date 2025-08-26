@@ -92,7 +92,7 @@ export default function BarcodeScanner({ onBarcodeScanned }: BarcodeScannerProps
               Start Camera
             </Button>
             <p className="text-xs mt-2 text-gray-400">
-              Demo: Use console to set mockBarcode = "ABX_1001_IFUD7D_RSSB"
+              Demo: Set window.mockBarcode = "ABX_1001_IFUD7D_RSSB" (or any token 1001-1020)
             </p>
           </div>
         </div>

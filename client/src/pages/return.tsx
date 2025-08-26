@@ -85,16 +85,39 @@ export default function Return() {
   };
 
   const handleBarcodeScanned = (barcode: string) => {
-    // Extract token number from barcode format ABX_1001_IFUD7D_RSSB
-    const match = barcode.match(/ABX_(\d+)_/);
+    // Extract and validate complete barcode format ABX_1001_IFUD7D_RSSB
+    const match = barcode.match(/^ABX_(\d+)_([A-Z0-9]+)_RSSB$/);
     if (match) {
       const tokenNumber = parseInt(match[1]);
-      validateTokenMutation.mutate(tokenNumber);
+      const secret = match[2];
+      
+      // Validate against known tokens (client-side pre-check)
+      const validTokens = [
+        { token: 1001, secret: "IFUD7D" }, { token: 1002, secret: "FIZD0V" }, { token: 1003, secret: "YQVP14" },
+        { token: 1004, secret: "Z55BWY" }, { token: 1005, secret: "CEJ88E" }, { token: 1006, secret: "CKLK5K" },
+        { token: 1007, secret: "RFQSZI" }, { token: 1008, secret: "XM4543" }, { token: 1009, secret: "244YOE" },
+        { token: 1010, secret: "1AC4NU" }, { token: 1011, secret: "WUNLKM" }, { token: 1012, secret: "PNVMTV" },
+        { token: 1013, secret: "YDSARN" }, { token: 1014, secret: "PT6UHX" }, { token: 1015, secret: "YLEYDO" },
+        { token: 1016, secret: "DFS7FL" }, { token: 1017, secret: "PEUSRX" }, { token: 1018, secret: "9284O3" },
+        { token: 1019, secret: "95FKXI" }, { token: 1020, secret: "ORD1ED" }
+      ];
+      
+      const isValidToken = validTokens.some(t => t.token === tokenNumber && t.secret === secret);
+      
+      if (isValidToken) {
+        validateTokenMutation.mutate(tokenNumber);
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Invalid Token",
+          description: `Token ${tokenNumber} with secret ${secret} is not registered in the system`,
+        });
+      }
     } else {
       toast({
         variant: "destructive",
-        title: "Invalid Barcode",
-        description: "Barcode format not recognized",
+        title: "Invalid Barcode Format", 
+        description: "Expected format: ABX_XXXX_SECRET_RSSB",
       });
     }
   };

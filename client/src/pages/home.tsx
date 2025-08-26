@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Download, Upload } from "lucide-react";
 
 export default function Home() {
-  const { data: stats } = useQuery({
+  const { data: stats } = useQuery<{ inUse: number; available: number }>({
     queryKey: ["/api/tokens/stats"],
   });
 
