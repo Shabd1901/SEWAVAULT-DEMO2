@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Camera, User, RotateCcw } from "lucide-react";
 import { useCamera } from "@/hooks/use-camera";
@@ -14,11 +14,21 @@ export default function PhotoCapture({ onPhotoCapture, capturedPhoto }: PhotoCap
   const { stream, startCamera, stopCamera, isActive } = useCamera();
   const [isCapturing, setIsCapturing] = useState(false);
 
+  // Auto-assign stream to video when available
+  useEffect(() => {
+    if (stream && videoRef.current) {
+      videoRef.current.srcObject = stream;
+      videoRef.current.play().catch(console.error);
+    }
+  }, [stream]);
+
   const handleStartCamera = async () => {
     try {
+      setIsCapturing(true);
       await startCamera();
     } catch (error) {
       console.error("Failed to start camera:", error);
+      setIsCapturing(false);
     }
   };
 
@@ -48,12 +58,13 @@ export default function PhotoCapture({ onPhotoCapture, capturedPhoto }: PhotoCap
     const photoDataUrl = canvas.toDataURL('image/jpeg', 0.9);
     onPhotoCapture(photoDataUrl);
     
-    stopCamera();
     setIsCapturing(false);
+    stopCamera();
   };
 
   const retakePhoto = () => {
     onPhotoCapture("");
+    setIsCapturing(false);
     handleStartCamera();
   };
 
@@ -119,12 +130,8 @@ export default function PhotoCapture({ onPhotoCapture, capturedPhoto }: PhotoCap
             autoPlay
             muted
             playsInline
-            onLoadedMetadata={() => {
-              if (videoRef.current && stream) {
-                videoRef.current.srcObject = stream;
-                // Ensure video is playing
-                videoRef.current.play();
-              }
+            onLoadedData={() => {
+              console.log('Video loaded and ready for capture');
             }}
             data-testid="video-photo-preview"
           />
@@ -134,12 +141,16 @@ export default function PhotoCapture({ onPhotoCapture, capturedPhoto }: PhotoCap
             onClick={capturePhoto}
             className="flex-1 bg-primary hover:bg-primary/90"
             data-testid="button-capture-photo"
+            disabled={!videoRef.current?.videoWidth}
           >
             <Camera size={16} className="mr-2" />
             Capture Photo
           </Button>
           <Button
-            onClick={stopCamera}
+            onClick={() => {
+              setIsCapturing(false);
+              stopCamera();
+            }}
             variant="secondary"
             data-testid="button-cancel-photo"
           >
